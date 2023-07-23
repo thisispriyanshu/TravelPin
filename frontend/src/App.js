@@ -10,9 +10,6 @@ import Login from "./components/Login";
 function App() {
   const accessToken=process.env.REACT_APP_MAPBOX;
   const mapStyle=process.env.REACT_APP_MAP_STYLE;
-  const myLat=process.env.REACT_APP_LATITUDE;
-  const myLong=process.env.REACT_APP_LONGITUDE;
-  const myZoom=process.env.REACT_APP_ZOOM;
   const myStorage = window.localStorage;
   const [currentUsername, setCurrentUsername] = useState(myStorage.getItem("user"));
   const [pins, setPins] = useState([]);
