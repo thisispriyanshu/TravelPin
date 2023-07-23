@@ -8,8 +8,8 @@ import Register from "./components/Register";
 import Login from "./components/Login";
 
 function App() {
-  const accessToken=process.env.REACT_APP_MAPBOX;
-  const mapStyle=process.env.REACT_APP_MAP_STYLE;
+  const accessToken="pk.eyJ1Ijoibml0cm8xMjMiLCJhIjoiY2xrZm9uOXhnMTBmeDNucG0wanQzMDYzZCJ9.OgYR7utqDY_bE9QWjS7Nag";
+  const mapStyle="mapbox://styles/nitro123/clkfq4sff005i01pc5as9aj4s";
   const myStorage = window.localStorage;
   const [currentUsername, setCurrentUsername] = useState(myStorage.getItem("user"));
   const [pins, setPins] = useState([]);
