@@ -21,7 +21,7 @@ function App() {
   const [viewport, setViewport] = useState({
     latitude:28.81642968066846,
     longitude:77.0596923828125,
-    zoom:10,
+    zoom:12,
   });
   const [showRegister, setShowRegister] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
