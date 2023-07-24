@@ -19,8 +19,7 @@ export default function Register({ setShowRegister }) {
     };
 
     try {
-      await axios.post("users/register", newUser);
-      setError(false);
+      await axios.post("/users/register", newUser);
       setSuccess(true);
     } catch (err) {
       setError(true);
