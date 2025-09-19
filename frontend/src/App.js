@@ -8,10 +8,14 @@ import Register from "./components/Register";
 import Login from "./components/Login";
 
 function App() {
-  const accessToken="pk.eyJ1Ijoibml0cm8xMjMiLCJhIjoiY2xrZm9uOXhnMTBmeDNucG0wanQzMDYzZCJ9.OgYR7utqDY_bE9QWjS7Nag";
-  const mapStyle="mapbox://styles/nitro123/clkfq4sff005i01pc5as9aj4s";
+  const accessToken =
+    "pk.eyJ1Ijoibml0cm8xMjMiLCJhIjoiY2xrZm9uOXhnMTBmeDNucG0wanQzMDYzZCJ9.OgYR7utqDY_bE9QWjS7Nag";
+  const mapStyle = "mapbox://styles/nitro123/clkfq4sff005i01pc5as9aj4s";
   const myStorage = window.localStorage;
-  const [currentUsername, setCurrentUsername] = useState(myStorage.getItem("user"));
+
+  const [currentUsername, setCurrentUsername] = useState(
+    myStorage.getItem("user")
+  );
   const [pins, setPins] = useState([]);
   const [currentPlaceId, setCurrentPlaceId] = useState(null);
   const [newPlace, setNewPlace] = useState(null);
@@ -19,12 +23,16 @@ function App() {
   const [desc, setDesc] = useState(null);
   const [star, setStar] = useState(0);
   const [viewport, setViewport] = useState({
-    latitude:28.81642968066846,
-    longitude:77.0596923828125,
-    zoom:12,
+    latitude: 28.81642968066846,
+    longitude: 77.0596923828125,
+    zoom: 12,
   });
   const [showRegister, setShowRegister] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+
+  // NEW: loading and retry
+  const [loading, setLoading] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
 
   const handleMarkerClick = (id, lat, long) => {
     setCurrentPlaceId(id);
@@ -60,21 +68,39 @@ function App() {
   };
 
   useEffect(() => {
-    const getPins = async () => {
+    const wakeServer = async () => {
       try {
+        // First, ping the backend to wake it up
+        await axios.get("/health");
+        // Then, fetch pins
         const allPins = await axios.get("pins");
         setPins(allPins.data);
+        setLoading(false);
       } catch (err) {
-        console.log(err);
+        console.log("Server not ready yet... retrying", err);
+        setRetryCount((prev) => prev + 1);
+        setTimeout(wakeServer, 2000); // retry every 2s
       }
     };
-    getPins();
+
+    wakeServer();
   }, []);
 
   const handleLogout = () => {
     setCurrentUsername(null);
     myStorage.removeItem("user");
   };
+
+  // Show loading screen until backend is awake
+  if (loading) {
+    return (
+      <div className="loading-screen">
+        <div className="spinner"></div>
+        <p>Waking up server... please wait ⏳</p>
+        <p>Time waited: {retryCount * 2} seconds</p>
+      </div>
+    );
+  }
 
   return (
     <div style={{ height: "100vh", width: "100%" }}>
@@ -91,6 +117,7 @@ function App() {
         {pins.map((p) => (
           <>
             <Marker
+              key={p._id}
               latitude={p.lat}
               longitude={p.long}
               offsetLeft={-3.5 * viewport.zoom}
